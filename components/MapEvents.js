@@ -1,30 +1,57 @@
 import { useMapEvents, useMap } from 'react-leaflet';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import throttle from 'lodash/throttle';
 
 const MapEvents = ({ fetchLocations, setCenter }) => {
   const map = useMap();
+  
+  // Track the previous center to prevent redundant API calls
+  const prevCenterRef = useRef(null);
 
-  // Throttle function to limit how often fetchLocations is called
+  // Throttled fetchLocations to prevent excessive API calls
   const throttledFetchLocations = useCallback(
     throttle((lat, lon, radius) => {
       fetchLocations(lat, lon, radius);
-    }, 2000), // Throttle interval (2000ms = 2 seconds)
+    }, 2000), // Limit to one call every 2 seconds
     [fetchLocations]
   );
 
+  // Convert the radius to the nearest integer
+  const getRadius = () => {
+    const bounds = map.getBounds();
+    const northEast = bounds.getNorthEast();
+    const southWest = bounds.getSouthWest();
+    const distance = northEast.distanceTo(southWest);
+    return Math.round(distance); // Round to the nearest integer
+  };
+
+  // Registering the map events for moveend and zoomend
   useMapEvents({
     moveend: () => {
       const mapCenter = map.getCenter();
-      const radius = map.getBounds().getNorthEast().distanceTo(map.getBounds().getSouthWest()) / 2;
-      setCenter([mapCenter.lat, mapCenter.lng]);
-      throttledFetchLocations(mapCenter.lat, mapCenter.lng, radius);
+      const currentCenter = [mapCenter.lat, mapCenter.lng];
+
+      // Check if the center has changed significantly
+      if (!prevCenterRef.current || 
+          prevCenterRef.current[0] !== currentCenter[0] || 
+          prevCenterRef.current[1] !== currentCenter[1]) {
+        // Update the center and fetch new locations
+        const radius = getRadius();
+        setCenter(currentCenter); // Update center state
+        throttledFetchLocations(mapCenter.lat, mapCenter.lng, radius); // Fetch new locations
+
+        // Update the reference to the new center
+        prevCenterRef.current = currentCenter;
+      }
     },
     zoomend: () => {
-      // Placeholder for zoom-related logic
-      // For example, you might want to adjust the fetch radius or other parameters based on zoom level
-      console.log('Zoom level changed to:', map.getZoom());
-    }
+      const zoomLevel = map.getZoom();
+      console.log('Zoom level changed to:', zoomLevel);
+
+      // Fetch locations with updated radius based on current zoom level
+      const radius = getRadius();
+      throttledFetchLocations(map.getCenter().lat, map.getCenter().lng, radius);
+    },
   });
 
   return null;
