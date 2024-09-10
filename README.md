@@ -1,40 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+🚀 **Exciting News! Locapedia Version 1.0.0 is Here!** 🌍
 
-## Getting Started
+We’re thrilled to unveil Locapedia v1.0.0, your new go-to for exploring fascinating Wikipedia locations on an interactive map! 📍🗺️
 
-First, run the development server:
+**What’s New:**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Interactive Map:** Visualize nearby Wikipedia locations effortlessly.
+- **Detailed Insights:** Get rich descriptions and images of landmarks.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Tech Stack:**
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+- **Next.js:** For server-side rendering and seamless React integration.
+- **Wikipedia API:** To fetch detailed information about locations.
+- **Leaflet:** For interactive and responsive map rendering.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+**How to Use:**
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. Visit [Locapedia](https://locapedia.vercel.app/) 🌐
+2. **Enable Location:** Allow access to your location so the map can display nearby Wikipedia locations 📍
+3. Explore the map to find and click on markers for detailed info and photos 📸
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+**To Do:**
 
-## Learn More
+- [ ] Implement additional search filters
+- [ ] Add user-generated content and reviews
 
-To learn more about Next.js, take a look at the following resources:
+Discover the world like never before with Locapedia. Dive in and let us know what you think! ✨💬
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Happy exploring! 🌟
