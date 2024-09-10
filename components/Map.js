@@ -1,71 +1,21 @@
-import { MapContainer, Marker, TileLayer, useMapEvents, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '@maptiler/leaflet-maptilersdk';
 import { useEffect, useState, useCallback } from 'react';
 import { getWikipediaLocations } from '../lib/wikipedia';
-import throttle from 'lodash/throttle';
 import LoadingSpinner from './LoadingSpinner';
-import BottomSheet from './BottomSheet'; // New BottomSheet component
+import BottomSheet from './BottomSheet'; 
+import MapEvents from './MapEvents'; 
+import FitMapBounds from './FitMapBounds'; 
+import customIcon from './customIcon'; 
 import styles from './Map.module.css';
-
-// Custom icon for the marker
-const customIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-<svg width="800px" height="800px" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-
-<defs>
-
-<style>.cls-1{fill:#94d5d2;}.cls-2{fill:#ffffff;}.cls-3{fill:#ff8898;}.cls-4{fill:#576065;}</style>
-
-</defs>
-
-<title>map-pointer-house</title>
-
-<g id="map-pointer-house">
-
-<g id="map-pointer-house-2" data-name="map-pointer-house">
-
-<g id="fill">
-
-<path class="cls-1" d="M74.26,31C74.26,49.77,51.75,88.2,45,88.2S15.74,49.77,15.74,31a29.26,29.26,0,0,1,58.52,0Z"/>
-
-<circle class="cls-2" cx="45" cy="32.2" r="18.78"/>
-
-<path class="cls-3" d="M52.69,25.17l-4.91-4a4.09,4.09,0,0,0-5.57,0l-5.47,4.48L35,28.28V39.43a2.91,2.91,0,0,0,3,2.79h13.6a2.91,2.91,0,0,0,3-2.79V28.28Z"/>
-
-</g>
-
-<g id="outline">
-
-<path class="cls-4" d="M45,90c-8.43,0-31.06-39.82-31.06-59a31.06,31.06,0,0,1,62.12,0C76.06,50.18,53.43,90,45,90ZM45,3.6A27.45,27.45,0,0,0,17.54,31c0,19,22.32,55.38,27.46,55.43S72.46,49.95,72.46,31A27.45,27.45,0,0,0,45,3.6Z"/>
-
-<path class="cls-4" d="M51.29,43.35H38.46a4.55,4.55,0,0,1-4.65-4.43V28.4a1.8,1.8,0,0,1,3.6,0V38.92a1,1,0,0,0,1.05.83H51.29a1,1,0,0,0,1.05-.83V28.4a1.8,1.8,0,0,1,3.6,0V38.92A4.55,4.55,0,0,1,51.29,43.35Z"/>
-
-<path class="cls-4" d="M58.15,32.09A1.79,1.79,0,0,1,57,31.69L46.49,23.06A2.11,2.11,0,0,0,43.61,23L33,31.69a1.8,1.8,0,0,1-2.28-2.78l10.52-8.62a5.65,5.65,0,0,1,7.64.09L59.29,28.9a1.8,1.8,0,0,1-1.14,3.19Z"/>
-
-<rect class="cls-4" x="49.59" y="19.19" width="3.6" height="4.71"/>
-
-</g>
-
-</g>
-
-</g>
-
-</svg>
-  `),
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
-});
-
-const defaultCenter = [22.3934, 91.821]; // Chittagong, Bangladesh
+import throttle from 'lodash/throttle';
 
 const Map = ({ locations, setLocations }) => {
   const [loading, setLoading] = useState(false);
-  const [center, setCenter] = useState(defaultCenter);
+  const [center, setCenter] = useState([22.3934, 91.821]); // Default center
   const [zoom, setZoom] = useState(13);
-  const [selectedLocation, setSelectedLocation] = useState(null); // Store selected location
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const fetchLocations = useCallback(
     throttle(async (lat, lon, radius) => {
@@ -82,43 +32,15 @@ const Map = ({ locations, setLocations }) => {
     [setLocations]
   );
 
-  const MapEvents = () => {
-    const map = useMap();
-
-    useMapEvents({
-      moveend: () => {
-        const mapCenter = map.getCenter();
-        const radius = map.getBounds().getNorthEast().distanceTo(map.getBounds().getSouthWest()) / 2;
-        setCenter([mapCenter.lat, mapCenter.lng]);
-        fetchLocations(mapCenter.lat, mapCenter.lng, radius);
-      },
-      zoomend: () => {
-        setZoom(map.getZoom());
-      }
-    });
-
-    return null;
-  };
-
-  const FitMapBounds = () => {
-    const map = useMap();
-
-    useEffect(() => {
-      if (locations.length > 0 && map.getZoom() <= 10) {
-        const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lon]));
-        map.fitBounds(bounds, { padding: [20, 20], maxZoom: 16 });
-      }
-    }, [locations, map]);
-
-    return null;
-  };
-
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        ({ coords }) => setCenter([coords.latitude, coords.longitude]),
-        () => setCenter(defaultCenter)
-      );
+    // Retrieve the saved location from localStorage
+    const savedLocation = localStorage.getItem('userLocation');
+    if (savedLocation) {
+      const { lat, lon } = JSON.parse(savedLocation);
+      setCenter([lat, lon]);
+    } else {
+      // Fallback to default location
+      setCenter([22.3934, 91.821]);
     }
   }, []);
 
@@ -141,18 +63,17 @@ const Map = ({ locations, setLocations }) => {
             icon={customIcon}
             eventHandlers={{
               click: () => {
-                setSelectedLocation(location); // Open bottom sheet with location details
+                setSelectedLocation(location); 
               },
             }}
           />
         ))}
 
-        <MapEvents />
-        <FitMapBounds />
+        <MapEvents fetchLocations={fetchLocations} setCenter={setCenter} />
+        <FitMapBounds locations={locations} />
         {loading && <LoadingSpinner />}
       </MapContainer>
 
-      {/* Show bottom sheet when a location is selected */}
       {selectedLocation && (
         <BottomSheet location={selectedLocation} onClose={() => setSelectedLocation(null)} />
       )}
