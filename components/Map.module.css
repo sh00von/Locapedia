@@ -1,0 +1,12 @@
+/* components/Map.module.css */
+.popupContent {
+    max-width: 200px;
+    word-wrap: break-word;
+  }
+  
+  .image {
+    width: 100px;
+    height: auto;
+    margin-top: 10px;
+  }
+  

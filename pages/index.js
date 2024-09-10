@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { getWikipediaLocations } from '../lib/wikipedia';
-import styles from './index.module.css'; // Import CSS module for styling
+import styles from './index.module.css';
+import LoadingSpinner from '../components/LoadingSpinner'; // Import the new spinner
 
 // Dynamically import the Map component to prevent server-side rendering issues with Leaflet
 const Map = dynamic(() => import('../components/Map'), { ssr: false });
@@ -46,9 +47,19 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      {loading && <div className={styles.loading}>Loading map...</div>}
-      {error && <div className={styles.error}>{error}</div>}
-      {!loading && !error && <div className={styles.mapContainer}><Map locations={locations} setLocations={setLocations} /></div>}
+      <header className={styles.header}>
+        <h1 className={styles.title}>Locapedia</h1>
+        <p className={styles.tagline}>Discover the World Around You, One Location at a Time.</p>
+      </header>
+      <main className={styles.main}>
+        {loading && <LoadingSpinner />} {/* Use the new spinner */}
+        {error && <div className={styles.error}>{error}</div>}
+        {!loading && !error && (
+          <div className={styles.mapContainer}>
+            <Map locations={locations} setLocations={setLocations} />
+          </div>
+        )}
+      </main>
     </div>
   );
 }
