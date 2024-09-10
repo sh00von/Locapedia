@@ -22,7 +22,6 @@ We’re thrilled to unveil Locapedia v1.0.0, your new go-to for exploring fascin
 **To Do:**
 
 - [ ] Implement additional search filters
-- [ ] Add user-generated content and reviews
 
 Discover the world like never before with Locapedia. Dive in and let us know what you think! ✨💬
 
