@@ -1,8 +1,14 @@
 // components/SEO.js
 import Head from 'next/head';
-import PropTypes from 'prop-types';
 
-const SEO = ({ title, description, keywords, author, ogImage, ogUrl }) => {
+const SEO = ({ 
+  title, 
+  description, 
+  keywords = '', 
+  author = '', 
+  ogImage = '', 
+  ogUrl 
+}) => {
   return (
     <Head>
       <title>{title}</title>
@@ -20,21 +26,6 @@ const SEO = ({ title, description, keywords, author, ogImage, ogUrl }) => {
       <link rel="canonical" href={ogUrl} />
     </Head>
   );
-};
-
-SEO.propTypes = {
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  keywords: PropTypes.string,
-  author: PropTypes.string,
-  ogImage: PropTypes.string,
-  ogUrl: PropTypes.string.isRequired,
-};
-
-SEO.defaultProps = {
-  keywords: '',
-  author: '',
-  ogImage: '',
 };
 
 export default SEO;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { getWikipediaLocations } from '../lib/wikipedia';
-import styles from './index.module.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SEO from '../components/SEO';
 
@@ -15,26 +14,23 @@ export default function Home() {
 
   // Default location coordinates (Chittagong, Bangladesh)
   const defaultCenter = [22.3934, 91.821];
+
+  // Function to fetch locations based on lat, lon, and radius
   const fetchData = async (lat, lon, radius = 10000) => {
     try {
-      // Ensure the radius is an integer by rounding it
-      const roundedRadius = Math.round(radius); // Or Math.floor(radius) if you want to round down
-  
-      const fetchedLocations = await getWikipediaLocations(lat, lon, roundedRadius); // Use rounded radius here
+      const roundedRadius = Math.round(radius);
+      const fetchedLocations = await getWikipediaLocations(lat, lon, roundedRadius);
       setLocations(fetchedLocations);
       setLoading(false);
-      
-      // Save the fetched location to localStorage
       localStorage.setItem('userLocation', JSON.stringify({ lat, lon }));
     } catch (err) {
       console.error('Error fetching locations:', err);
-      setError('Failed to fetch locations');
+      setError('Failed to fetch locations. Please try again later.');
       setLoading(false);
     }
   };
-  
 
-  // Centralized function to handle fetching the location and data
+  // Function to handle fetching the location and data
   const getLocationAndFetchData = () => {
     const savedLocation = localStorage.getItem('userLocation');
 
@@ -45,18 +41,18 @@ export default function Home() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          fetchData(latitude, longitude); // Fetch data with user's location
+          fetchData(latitude, longitude);
         },
         (error) => {
           console.error('Error getting current location:', error);
           setError('Failed to get current location. Using default location.');
-          fetchData(defaultCenter[0], defaultCenter[1]); // Fallback to default location
+          fetchData(defaultCenter[0], defaultCenter[1]);
         },
         { timeout: 10000, enableHighAccuracy: true }
       );
     } else {
       setError('Geolocation is not supported by this browser. Using default location.');
-      fetchData(defaultCenter[0], defaultCenter[1]); // Fallback to default location
+      fetchData(defaultCenter[0], defaultCenter[1]);
     }
   };
 
@@ -74,21 +70,35 @@ export default function Home() {
         ogImage="/banner.png"
         ogUrl="https://www.mywebsite.com"
       />
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Locapedia</h1>
-          <p className={styles.tagline}>Discover the World Around You, One Location at a Time.</p>
-        </header>
-        <main className={styles.main}>
-          {loading && <LoadingSpinner />}
-          {error && <div className={styles.error}>{error}</div>}
-          {!loading && !error && (
-            <div className={styles.mapContainer}>
-              <Map locations={locations} setLocations={setLocations} />
-            </div>
-          )}
-        </main>
+   <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+  <header className="text-center mb-8">
+    <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+      Locapedia
+    </h1>
+    <p className="text-lg text-gray-600 mt-2 sm:text-xl">
+      Discover the World Around You, One Location at a Time.
+    </p>
+  </header>
+  <main>
+    {loading && (
+      <div className="flex justify-center items-center h-60">
+        <LoadingSpinner />
       </div>
+    )}
+    {error && (
+      <div className="bg-red-100 border border-red-400 text-red-700 p-4 rounded-md mb-6">
+        <h2 className="font-semibold">Error:</h2>
+        <p>{error}</p>
+      </div>
+    )}
+    {!loading && !error && (
+      <div className="relative h-[70vh] rounded-lg shadow-lg overflow-hidden">
+        <Map locations={locations} setLocations={setLocations} />
+      </div>
+    )}
+  </main>
+</div>
+
     </>
   );
 }

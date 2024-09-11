@@ -1,0 +1,27 @@
+.searchContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9; /* Light background for the search bar container */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .customSingleValue {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .customMenu {
+    border-radius: 8px;
+  }
+  
+  .error {
+    color: #d23f3a;
+    margin-top: 10px;
+    text-align: center;
+  }
+  

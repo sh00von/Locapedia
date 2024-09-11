@@ -6,7 +6,7 @@
 
 .liveLocationCircle {
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
   right: 20px;
   width: 50px; /* Increased size for better visibility */
   height: 50px;

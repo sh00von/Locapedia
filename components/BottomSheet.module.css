@@ -1,119 +1,134 @@
-/* BottomSheet.module.css */
 .bottomSheet {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 66vh; /* Two-thirds of the viewport height */
-    background-color: white;
-    box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 12px 12px 0 0;
-    overflow-y: auto;
-    z-index: 1000;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 66vh; /* Two-thirds of the viewport height */
+  background-color: #ffffff;
+  box-shadow: 0px -4px 16px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+  overflow-y: auto;
+  z-index: 1000;
+  transform: translateY(100%);
+  animation: slideUp 0.3s forwards;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from {
     transform: translateY(100%);
-    animation: slideUp 0.3s forwards;
-    display: flex;
-    flex-direction: column;
   }
-  
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
+  to {
+    transform: translateY(0);
   }
-  
+}
+
+.sheetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #495057;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: #212529;
+}
+
+.sheetContent {
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  flex: 1; /* Allows content to grow and become scrollable if needed */
+  overflow-y: auto;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  margin: 1rem 0;
+  border-radius: 12px;
+}
+
+/* Responsive Typography */
+.sheetHeader h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: #343a40;
+}
+
+.sheetContent p {
+  font-size: 1rem;
+  color: #495057;
+}
+
+/* Media Queries for Responsive Design */
+
+/* Smaller screens (mobile) */
+@media (max-width: 600px) {
+  .bottomSheet {
+    height: 75vh; /* Slightly larger height on smaller screens */
+  }
   .sheetHeader {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #ddd;
-    align-items: center;
+    padding: 1rem;
   }
-  
-  .closeButton {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
+  .sheetHeader h2 {
+    font-size: 1.4rem;
   }
-  
   .sheetContent {
-    padding: 16px;
-    font-size: 16px;
-    line-height: 1.5;
-    flex: 1; /* Allows content to grow and become scrollable if needed */
-    overflow-y: auto;
+    padding: 1rem;
   }
-  
-  /* Responsive Image */
-  .image {
-    width: 100%;
-    height: auto;
-    max-width: 600px;
-    margin: 16px auto;
-    display: block;
-    border-radius: 8px;
+  .sheetContent p {
+    font-size: 0.9rem;
   }
-  
-  /* Responsive Typography */
+}
+
+/* Medium screens (tablet) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .bottomSheet {
+    height: 66vh;
+  }
+  .sheetHeader {
+    padding: 1.25rem;
+  }
   .sheetHeader h2 {
     font-size: 1.5rem;
-    margin: 0;
   }
-  
+  .sheetContent {
+    padding: 1.25rem;
+  }
   .sheetContent p {
     font-size: 1rem;
-    line-height: 1.6;
   }
-  
-  /* Media Queries for Responsive Design */
-  
-  /* Smaller screen (mobile) */
-  @media (max-width: 600px) {
-    .bottomSheet {
-      height: 75vh; /* Slightly larger height on smaller screens */
-    }
-    .sheetHeader h2 {
-      font-size: 1.2rem;
-    }
-    .sheetContent p {
-      font-size: 0.9rem;
-    }
-    .image {
-      max-width: 100%;
-    }
+}
+
+/* Large screens (desktop) */
+@media (min-width: 1025px) {
+  .bottomSheet {
+    height: 66vh;
   }
-  
-  /* Medium screen (tablet) */
-  @media (min-width: 601px) and (max-width: 1024px) {
-    .bottomSheet {
-      height: 66vh;
-    }
-    .sheetHeader h2 {
-      font-size: 1.3rem;
-    }
-    .sheetContent p {
-      font-size: 1rem;
-    }
+  .sheetHeader {
+    padding: 1.5rem;
   }
-  
-  /* Large screens (desktop) */
-  @media (min-width: 1025px) {
-    .bottomSheet {
-      height: 66vh;
-    }
-    .sheetHeader h2 {
-      font-size: 1.6rem;
-    }
-    .sheetContent p {
-      font-size: 1.1rem;
-    }
-    .image {
-      max-width: 600px;
-    }
+  .sheetHeader h2 {
+    font-size: 1.6rem;
   }
-  
+  .sheetContent {
+    padding: 1.5rem;
+  }
+  .sheetContent p {
+    font-size: 1.1rem;
+  }
+}
