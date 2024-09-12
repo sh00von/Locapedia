@@ -23,7 +23,6 @@ const BottomSheet = ({ location, onClose, isPreview }) => {
 
   useEffect(() => {
     if (location && location.title) {
-      console.log('Location data:', location); // Debugging line
       document.title = location.title;
       router.push(`/?location=${encodeURIComponent(location.title)}`, undefined, { shallow: true });
     }
@@ -65,17 +64,19 @@ const BottomSheet = ({ location, onClose, isPreview }) => {
       >
         <div className={styles.sheetHeader}>
           <button onClick={handleClose} className={styles.closeButton}>✕</button>
-          <h2>{location ? location.title : 'Loading...'}</h2>
+          <h2>{location.title}</h2>
         </div>
 
         <div className={styles.sheetContent}>
           <div
             dangerouslySetInnerHTML={{
-              __html: location ? (isPreview && !isExpanded ? location.preview : location.description) : 'Loading...', // Show loading state if location is not yet available
+              __html: isPreview && !isExpanded
+                ? location.preview // Show preview description if in preview mode
+                : location.description, // Full description if expanded or not in preview mode
             }}
           />
 
-          {location?.image && (
+          {location.image && (
             <div className={styles.imageWrapper}>
               <Image
                 src={location.image}

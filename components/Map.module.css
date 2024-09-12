@@ -2,41 +2,30 @@
   position: relative;
   height: 100%;
   width: 100%;
-}
+}/* Map.module.css */
 
 .liveLocationCircle {
   position: absolute;
-  bottom: 40px;
-  right: 20px;
-  width: 50px; /* Increased size for better visibility */
-  height: 50px;
+  bottom: 20px; /* Adjust as needed */
+  right: 20px;  /* Adjust as needed */
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 10px;
   cursor: pointer;
-  border: 3px solid #ffffff; /* White border for better contrast */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* More pronounced shadow */
-  background-color: #d23f3a; /* Default color */
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  z-index: 1000;
+  z-index: 1000; /* Ensure it's above other elements */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s; /* Smooth transition for color changes */
 }
 
-.liveLocationCircle:hover {
-  transform: scale(1.1); /* Slight scale-up on hover */
-  background-color: #0099cc; /* Darker blue on hover */
-  border-color: #eeeeee; /* Lighter border color on hover */
+.active {
+  background-color: #1e90ff; /* Blue color for active state */
 }
 
-.liveLocationCircle i {
-  font-size: 1.5em; /* Larger location icon */
-  color: white;
+.inactive {
+  background-color: #888888; /* Gray color for inactive state */
 }
 
-/* Add media query for smaller screens */
-@media (max-width: 600px) {
-  .liveLocationCircle {
-    width: 40px; /* Smaller size on mobile */
-    height: 40px;
-  }
+.liveLocationCircle svg {
+  fill: #ffffff; /* White color for the SVG icon */
 }
