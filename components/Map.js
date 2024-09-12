@@ -2,7 +2,7 @@ import { MapContainer, Marker, TileLayer, useMap, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState, useCallback } from 'react';
 import throttle from 'lodash/throttle';
-import { getWikipediaLocations } from '../lib/wikipedia';
+import { getWikipediaLocations, getLocationCoordinates } from '../lib/wikipedia';
 import LoadingSpinner from './LoadingSpinner';
 import BottomSheet from './BottomSheet';
 import MapEvents from './MapEvents';
@@ -84,15 +84,28 @@ const Map = ({ locations, setLocations }) => {
   }, []);
 
   useEffect(() => {
-    if (queryLocation && initialLoad) {
-      const locationData = locations.find((loc) => loc.title === decodeURIComponent(queryLocation));
-      if (locationData) {
-        setSelectedLocation(locationData);
-        setCenter([locationData.lat, locationData.lon]); // Center map on the location
+    const fetchCoordinates = async () => {
+      if (queryLocation && initialLoad) {
+        try {
+          const locationData = await getLocationCoordinates(queryLocation);
+          if (locationData) {
+            console.log('Fetched coordinates:', locationData); // Debugging line
+            setCenter([locationData.lat, locationData.lon]); // Center map on the location
+            const newLocations = await getWikipediaLocations(locationData.lat, locationData.lon); // Fetch locations to populate data
+            setLocations(newLocations); // Set locations for display
+            const selected = newLocations.find(loc => loc.title === queryLocation);
+            setSelectedLocation(selected || { title: queryLocation, lat: locationData.lat, lon: locationData.lon });
+          }
+        } catch (error) {
+          console.error('Error fetching coordinates:', error);
+        }
         setInitialLoad(false); // Prevent re-triggering the effect
       }
-    }
-  }, [queryLocation, locations, initialLoad]);
+    };
+
+
+    fetchCoordinates();
+  }, [queryLocation, initialLoad]);
 
   useEffect(() => {
     if (userLocation && center) {
@@ -138,6 +151,7 @@ const Map = ({ locations, setLocations }) => {
             icon={customIcon}
             eventHandlers={{
               click: () => {
+                console.log('Marker clicked:', location); // Debugging line
                 setSelectedLocation(location);
                 router.push(`/?location=${encodeURIComponent(location.title)}`, undefined, { shallow: true });
               },
