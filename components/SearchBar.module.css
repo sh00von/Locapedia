@@ -1,27 +1,111 @@
-.searchContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background-color: #f9f9f9; /* Light background for the search bar container */
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  
-  .customSingleValue {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .customMenu {
-    border-radius: 8px;
-  }
-  
-  .error {
-    color: #d23f3a;
-    margin-top: 10px;
-    text-align: center;
-  }
-  
+/* SearchBar.module.css */
+
+/* Button to open the search bar */
+.showSearchButton {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+
+.showSearchButton:hover {
+  background-color: #0056b3;
+}
+
+/* SVG icon inside the button */
+.searchIcon {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+}
+
+/* Button text styling */
+.buttonText {
+  display: none; /* Hide text for now */
+}
+
+/* Overlay background when search bar is shown */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+/* Search bar container */
+.searchBarContainer {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Close button inside the search bar */
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #007bff;
+}
+
+/* Search input */
+.searchInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+/* Suggestions list */
+.suggestionsList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-top: none;
+  background-color: #ffffff;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Suggestion item */
+.suggestionItem {
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.suggestionItem:hover {
+  background-color: #f1f1f1;
+}

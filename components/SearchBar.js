@@ -1,117 +1,103 @@
-import { useState } from 'react';
-import AsyncSelect from 'react-select/async';
-import { components } from 'react-select';
-import styles from './SearchBar.module.css'; // Custom CSS module
+import { useState, useCallback } from 'react';
+import { debounce } from 'lodash';
+import { fetchLocationSuggestions, fetchLocationCoordinates } from '../lib/locationAPI'; // Adjust path as necessary
+import 'tailwindcss/tailwind.css'; // Ensure Tailwind CSS is imported
 
-const SearchBar = ({ setCenter, fetchLocations }) => {
-  const [error, setError] = useState(null);
-  const OPENCAGE_API_KEY = '7873f91ccdaa44919ff595db0ac6d32e'; // Replace with your OpenCage API Key
+const SearchBar = ({ onSearch }) => {
+  const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isOverlayVisible, setOverlayVisible] = useState(false);
 
-  const fetchSuggestions = async (inputValue) => {
-    if (!inputValue) return [];
-
-    try {
-      const response = await fetch(
-        `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(inputValue)}&key=${OPENCAGE_API_KEY}&limit=5`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+  const debouncedFetchSuggestions = useCallback(
+    debounce(async (inputValue) => {
+      if (inputValue) {
+        try {
+          const results = await fetchLocationSuggestions(inputValue);
+          setSuggestions(results);
+        } catch (error) {
+          console.error('Error fetching suggestions:', error);
+          setSuggestions([]);
+        }
+      } else {
+        setSuggestions([]);
       }
+    }, 500),
+    []
+  );
 
-      const data = await response.json();
-
-      if (data.results.length === 0) {
-        return [];
-      }
-
-      return data.results.map((result) => ({
-        label: result.formatted,
-        value: { lat: result.geometry.lat, lon: result.geometry.lng },
-      }));
-    } catch (err) {
-      console.error('Error fetching location suggestions:', err);
-      setError('Failed to fetch suggestions. Please try again later.');
-      return [];
-    }
+  const handleChange = (event) => {
+    const { value } = event.target;
+    setQuery(value);
+    debouncedFetchSuggestions(value);
   };
 
-  const handleSelect = async (selectedOption) => {
-    if (selectedOption) {
-      const { lat, lon } = selectedOption.value;
-      setCenter([lat, lon]);
-
-      if (fetchLocations) {
-        await fetchLocations(lat, lon, 10000); // Adjust radius as needed
+  const handleSelect = async (selectedLocation) => {
+    setQuery(selectedLocation);
+    setSuggestions([]);
+    try {
+      const coords = await fetchLocationCoordinates(selectedLocation);
+      if (coords) {
+        onSearch(coords);
+        setOverlayVisible(false);
       }
-
-      setError(null);
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
     }
   };
 
   return (
-    <div className={styles.searchBarContainer}>
-      <AsyncSelect
-        cacheOptions
-        loadOptions={fetchSuggestions}
-        onChange={handleSelect}
-        placeholder="Search for a location..."
-        noOptionsMessage={() => "No suggestions found"}
-        defaultOptions={false}
-        components={{
-          SingleValue: ({ data }) => (
-            <div className={styles.customSingleValue}>
-              <i className="fas fa-map-marker-alt"></i> {data.label}
-            </div>
-          ),
-          Menu: (props) => <components.Menu {...props} className={styles.customMenu} />,
-        }}
-        styles={{
-          container: (base) => ({
-            ...base,
-            width: '100%',
-            maxWidth: '400px', // Adjust width as needed
-            borderRadius: '5px',
-            boxShadow: '0 2px 15px rgba(0,0,0,0.2)',
-            margin: '0', // Remove margin to align with parent container
-          }),
-          control: (base) => ({
-            ...base,
-            height: '40px',
-            minHeight: '40px',
-            borderRadius: '5px',
-            borderColor: '#ccc',
-            boxShadow: 'none',
-            '&:hover': {
-              borderColor: '#aaa',
-            },
-          }),
-          menu: (base) => ({
-            ...base,
-            marginTop: '5px',
-            borderRadius: '5px',
-            boxShadow: '0 2px 15px rgba(0,0,0,0.2)',
-            zIndex: 1000, // Ensure menu appears above other elements
-          }),
-          menuList: (base) => ({
-            ...base,
-            padding: 0,
-          }),
-          option: (base, { isSelected, isFocused }) => ({
-            ...base,
-            backgroundColor: isSelected ? '#f0f0f0' : isFocused ? '#fafafa' : '#fff',
-            color: '#333',
-            padding: '10px 15px',
-            cursor: 'pointer',
-          }),
-          placeholder: (base) => ({
-            ...base,
-            color: '#aaa',
-          }),
-        }}
-      />
-      {error && <p className={styles.error}>{error}</p>}
-    </div>
+    <>
+      {/* Button to show the search bar with SVG icon */}
+      <button
+        className="fixed bottom-4 left-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+        onClick={() => setOverlayVisible(true)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="white"
+          viewBox="0 0 50 50"
+        >
+         <path d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z"/>
+        </svg>
+      </button>
+
+      {/* Overlay with Search Bar */}
+      {isOverlayVisible && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center " style={{ zIndex: 500000 }}
+>
+          <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => setOverlayVisible(false)}
+            >
+              &times;
+            </button>
+            <input
+              type="text"
+              value={query}
+              onChange={handleChange}
+              placeholder="Search for a location"
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {Array.isArray(suggestions) && suggestions.length > 0 && (
+  <ul className="mt-2 border border-gray-300 rounded-md max-h-60 overflow-y-auto">
+    {suggestions.map((suggestion, index) => (
+      <li
+        key={index}
+        onClick={() => handleSelect(suggestion)}
+        className="cursor-pointer hover:bg-gray-200 p-2"
+      >
+        {suggestion}
+      </li>
+    ))}
+  </ul>
+)}
+
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

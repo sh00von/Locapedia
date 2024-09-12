@@ -1,16 +1,17 @@
+import { useEffect, useState, useCallback } from 'react';
 import { MapContainer, Marker, TileLayer, useMap, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState, useCallback } from 'react';
 import throttle from 'lodash/throttle';
-import { getWikipediaLocations, getLocationCoordinates } from '../lib/wikipedia';
+import { getWikipediaLocations } from '../lib/wikipedia';
 import LoadingSpinner from './LoadingSpinner';
 import BottomSheet from './BottomSheet';
 import MapEvents from './MapEvents';
 import FitMapBounds from './FitMapBounds';
-import L from 'leaflet'; // Import Leaflet for custom icons
+import L from 'leaflet';
 import customIcon from './customIcon';
 import styles from './Map.module.css';
 import { useRouter } from 'next/router';
+import SearchBar from './SearchBar'; // Import SearchBar
 
 const MapRefresher = ({ center }) => {
   const map = useMap();
@@ -31,10 +32,10 @@ const Map = ({ locations, setLocations }) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isAtUserLocation, setIsAtUserLocation] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true); // Flag for initial load
-  const [preventAutoCenter, setPreventAutoCenter] = useState(false); // State for preventing auto-centering
-  const [activeMarker, setActiveMarker] = useState(null); // State for active marker
-
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [preventAutoCenter, setPreventAutoCenter] = useState(false);
+  const [activeMarker, setActiveMarker] = useState(null);
+  
   const router = useRouter();
   const { location: queryLocation } = router.query;
 
@@ -54,11 +55,10 @@ const Map = ({ locations, setLocations }) => {
   );
 
   useEffect(() => {
-    // Fetch locations based on the default center if no queryLocation is provided
     const fetchInitialLocations = async () => {
       if (initialLoad) {
         try {
-          await fetchLocations(center[0], center[1], 1000); // Fetch locations around the default center
+          await fetchLocations(center[0], center[1], 1000);
           setInitialLoad(false);
         } catch (error) {
           console.error('Error fetching initial locations:', error);
@@ -73,7 +73,7 @@ const Map = ({ locations, setLocations }) => {
     const initializeMap = async () => {
       if (queryLocation && initialLoad) {
         try {
-          setPreventAutoCenter(true); // Prevent auto-centering while fetching location
+          setPreventAutoCenter(true);
           const locationData = await getLocationCoordinates(queryLocation);
           if (locationData) {
             setCenter([locationData.lat, locationData.lon]);
@@ -85,8 +85,8 @@ const Map = ({ locations, setLocations }) => {
         } catch (error) {
           console.error('Error fetching coordinates:', error);
         }
-        setInitialLoad(false); // Prevent re-triggering the effect
-        setPreventAutoCenter(false); // Allow auto-centering after fetching location
+        setInitialLoad(false);
+        setPreventAutoCenter(false);
       }
     };
 
@@ -122,12 +122,12 @@ const Map = ({ locations, setLocations }) => {
 
   const handleBottomSheetClose = () => {
     setSelectedLocation(null);
-    router.push('/', undefined, { shallow: true }); // Remove query parameter from URL but keep the center
+    router.push('/', undefined, { shallow: true });
   };
 
   const handleMarkerClick = (location) => {
     setSelectedLocation(location);
-    setActiveMarker(location); // Set the clicked marker as active
+    setActiveMarker(location);
     router.push(`/?location=${encodeURIComponent(location.title)}`, undefined, { shallow: true });
   };
 
@@ -140,8 +140,21 @@ const Map = ({ locations, setLocations }) => {
     }
   };
 
+  const handleSearch = async (coords) => {
+    setCenter([coords.lat, coords.lon]);
+    await fetchLocations(coords.lat, coords.lon, 1000);
+  };
+
+  useEffect(() => {
+    if (selectedLocation) {
+      setCenter([selectedLocation.lat, selectedLocation.lon]);
+    }
+  }, [selectedLocation]);
+
   return (
     <div className={styles.mapContainer}>
+      <SearchBar onSearch={handleSearch} />
+
       <MapContainer
         center={center}
         zoom={zoom}
