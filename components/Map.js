@@ -9,6 +9,7 @@ import MapEvents from './MapEvents';
 import FitMapBounds from './FitMapBounds';
 import customIcon from './customIcon';
 import styles from './Map.module.css';
+import { useRouter } from 'next/router';
 
 const MapRefresher = ({ center }) => {
   const map = useMap();
@@ -29,6 +30,10 @@ const Map = ({ locations, setLocations }) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isAtUserLocation, setIsAtUserLocation] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true); // Flag for initial load
+
+  const router = useRouter();
+  const { location: queryLocation } = router.query;
 
   const fetchLocations = useCallback(
     throttle(async (lat, lon, radius) => {
@@ -78,12 +83,16 @@ const Map = ({ locations, setLocations }) => {
     return () => clearTimeout(locationTimeout);
   }, []);
 
-  const panToUserLocation = () => {
-    if (userLocation) {
-      setCenter(userLocation);
-      setIsAtUserLocation(true);
+  useEffect(() => {
+    if (queryLocation && initialLoad) {
+      const locationData = locations.find((loc) => loc.title === decodeURIComponent(queryLocation));
+      if (locationData) {
+        setSelectedLocation(locationData);
+        setCenter([locationData.lat, locationData.lon]); // Center map on the location
+        setInitialLoad(false); // Prevent re-triggering the effect
+      }
     }
-  };
+  }, [queryLocation, locations, initialLoad]);
 
   useEffect(() => {
     if (userLocation && center) {
@@ -93,6 +102,13 @@ const Map = ({ locations, setLocations }) => {
       setIsAtUserLocation(isCloseEnough);
     }
   }, [userLocation, center]);
+
+  const panToUserLocation = () => {
+    if (userLocation) {
+      setCenter(userLocation);
+      setIsAtUserLocation(true);
+    }
+  };
 
   return (
     <div className={styles.mapContainer}>
@@ -123,6 +139,7 @@ const Map = ({ locations, setLocations }) => {
             eventHandlers={{
               click: () => {
                 setSelectedLocation(location);
+                router.push(`/?location=${encodeURIComponent(location.title)}`, undefined, { shallow: true });
               },
             }}
           />
@@ -136,7 +153,10 @@ const Map = ({ locations, setLocations }) => {
       </MapContainer>
 
       {selectedLocation && (
-        <BottomSheet location={selectedLocation} onClose={() => setSelectedLocation(null)} />
+        <BottomSheet location={selectedLocation} onClose={() => {
+          setSelectedLocation(null);
+          router.push('/', undefined, { shallow: true });
+        }} />
       )}
 
       {userLocation && (
