@@ -10,6 +10,7 @@ const BottomSheet = ({ location, onClose, isPreview }) => {
   const [isWebShareSupported, setIsWebShareSupported] = useState(false);
   const [isCopied, setIsCopied] = useState(false); // State to manage copy link feedback
   const router = useRouter();
+  
 
   useEffect(() => {
     // Check if Web Share API is supported
@@ -82,33 +83,6 @@ const BottomSheet = ({ location, onClose, isPreview }) => {
     <>
       <Head>
         <title>{location ? location.title : 'Location Details'}</title>
-        <meta name="description" content={location ? location.description : 'Location details and information'} />
-        <meta property="og:title" content={location ? location.title : 'Location Details'} />
-        <meta property="og:description" content={location ? location.description : 'Location details and information'} />
-        <meta property="og:image" content={location && location.image ? location.image : '/default-image.png'} />
-        <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-
-        {/* Structured Data (JSON-LD) */}
-        {location && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Place",
-                "name": location.title,
-                "description": location.description,
-                "image": location.image,
-                "url": window.location.href,
-                "address": {
-                  "@type": "PostalAddress",
-                  "addressLocality": location.address || "Unknown",
-                  "addressRegion": location.region || "Unknown"
-                }
-              })
-            }}
-          />
-        )}
       </Head>
       <div
         className={`${styles.bottomSheet} ${isExpanded ? styles.expanded : styles.collapsed}`}
@@ -149,10 +123,10 @@ const BottomSheet = ({ location, onClose, isPreview }) => {
 
           {/* Share and Copy Buttons */}
           <div className={`${styles.actionButtons} ${isHovered ? styles.showButtons : ''}`}>
-            <button onClick={handleShare} className={styles.shareButton} aria-label="Share this location">
+            <button onClick={handleShare} className={styles.shareButton}>
               {isWebShareSupported ? '📤 Share' : 'Share'}
             </button>
-            <button onClick={handleCopy} className={styles.copyButton} aria-label="Copy link">
+            <button onClick={handleCopy} className={styles.copyButton}>
               {isCopied ? '✅ Copied!' : '📋 Copy Link'}
             </button>
           </div>

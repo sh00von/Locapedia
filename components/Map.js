@@ -54,6 +54,22 @@ const Map = ({ locations, setLocations }) => {
   );
 
   useEffect(() => {
+    // Fetch locations based on the default center if no queryLocation is provided
+    const fetchInitialLocations = async () => {
+      if (initialLoad) {
+        try {
+          await fetchLocations(center[0], center[1], 1000); // Fetch locations around the default center
+          setInitialLoad(false);
+        } catch (error) {
+          console.error('Error fetching initial locations:', error);
+        }
+      }
+    };
+
+    fetchInitialLocations();
+  }, [fetchLocations, initialLoad]);
+
+  useEffect(() => {
     const initializeMap = async () => {
       if (queryLocation && initialLoad) {
         try {

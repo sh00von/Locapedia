@@ -87,7 +87,7 @@
 /* Smaller screens (mobile) */
 @media (max-width: 600px) {
   .bottomSheet {
-    height: 90vh; /* Slightly larger height on smaller screens */
+    height: 80vh; /* Slightly larger height on smaller screens */
   }
   .sheetHeader {
     padding: 0.75rem; /* Adjust padding for mobile */
@@ -106,7 +106,7 @@
 /* Medium screens (tablet) */
 @media (min-width: 601px) and (max-width: 1024px) {
   .bottomSheet {
-    height: 86vh;
+    height: 80vh;
   }
   .sheetHeader {
     padding: 1rem; /* Adjust padding for tablet */
@@ -125,7 +125,7 @@
 /* Large screens (desktop) */
 @media (min-width: 1025px) {
   .bottomSheet {
-    height: 86vh;
+    height: 80vh;
   }
   .sheetHeader {
     padding: 1.25rem; /* Adjust padding for desktop */
