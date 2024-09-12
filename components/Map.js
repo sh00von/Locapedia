@@ -27,7 +27,7 @@ const MapRefresher = ({ center }) => {
 const Map = ({ locations, setLocations }) => {
   const [loading, setLoading] = useState(false);
   const [center, setCenter] = useState([23.8041, 90.4152]); // Default center
-  const [zoom, setZoom] = useState(13);
+  const [zoom, setZoom] = useState(15);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isAtUserLocation, setIsAtUserLocation] = useState(false);

@@ -106,7 +106,7 @@
 /* Medium screens (tablet) */
 @media (min-width: 601px) and (max-width: 1024px) {
   .bottomSheet {
-    height: 66vh;
+    height: 86vh;
   }
   .sheetHeader {
     padding: 1rem; /* Adjust padding for tablet */
@@ -125,7 +125,7 @@
 /* Large screens (desktop) */
 @media (min-width: 1025px) {
   .bottomSheet {
-    height: 66vh;
+    height: 86vh;
   }
   .sheetHeader {
     padding: 1.25rem; /* Adjust padding for desktop */
@@ -139,4 +139,52 @@
   .sheetContent p {
     font-size: 1.1rem;
   }
+}
+/* Style for the action buttons */
+.actionButtons {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.showButtons {
+  opacity: 1; /* Make buttons visible when hovered */
+}
+
+.shareButton,
+.copyButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.shareButton:hover,
+.copyButton:hover {
+  background-color: #005bb5;
+}
+
+.copyButton {
+  background-color: #28a745;
+}
+
+.copyButton:hover {
+  background-color: #218838;
+}
+
+/* Optional: Copy success feedback styles */
+.copyButton.copied {
+  background-color: #28a745;
+}
+
+.copyButton.copied:hover {
+  background-color: #218838;
 }
